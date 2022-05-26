@@ -21,6 +21,14 @@ class MainActivity : AppCompatActivity()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val layout = findViewById<BoardConstraintLayout>(R.id.board_container)
+        for (i in 0..3) {
+            for (j in 0..3) {
+                layout.GetPointOnScreen(Vector2(i, j))
+            }
+        }
+
+
         gestureDetectorCompat = GestureDetectorCompat(this, object : SimpleOnGestureListener() {
             override fun onScroll(
                 e1: MotionEvent,
