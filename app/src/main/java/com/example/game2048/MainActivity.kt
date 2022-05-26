@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity()
 
                 // TODO: Only for testing to simulate animation delay
                 Handler(Looper.getMainLooper()).postDelayed({
-                    isSwipedThisRound = true
+                    isSwipedThisRound = false
                 }, 1000)
 
                 val angle =
@@ -48,30 +48,40 @@ class MainActivity : AppCompatActivity()
                 // Left swipe
                 if (angle > -45 && angle <= 45) {
                     Log.d("test", "Right to Left swipe performed")
-                    grid.swipe(Grid.Direction.LEFT)
+                    grid.swipe(Grid.Direction.RIGHT)
+                    playerSwipe()
                     return true
                 }
                 // Right swipe
                 if (angle >= 135 && angle < 180 || angle < -135 && angle > -180) {
                     Log.d("test", "Left to Right swipe performed")
-                    grid.swipe(Grid.Direction.RIGHT)
+                    grid.swipe(Grid.Direction.LEFT)
+                    playerSwipe()
                     return true
                 }
                 // Up swipe
                 if (angle < -45 && angle >= -135) {
                     Log.d("test", "Up to Down swipe performed")
                     grid.swipe(Grid.Direction.DOWN)
+                    playerSwipe()
                     return true
                 }
                 // Down swipe
                 if (angle > 45 && angle <= 135) {
                     Log.d("test", "Down to Up swipe performed")
                     grid.swipe(Grid.Direction.UP)
+                    playerSwipe()
                     return true
                 }
                 return false
             }
         })
+    }
+
+    fun playerSwipe() {
+        // TODO: Animate changes
+        grid.testPrint()
+        grid.endRound()
     }
 
     fun animateCellChanges() {

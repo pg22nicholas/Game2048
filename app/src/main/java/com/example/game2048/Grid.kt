@@ -1,83 +1,113 @@
 package com.example.game2048
 
+import android.os.Debug
+import android.util.Log
+
 class Grid() {
 
-    val gridSize : Int = 4
-    var gridList = List(4) { mutableListOf<Cell?>()}
+    private val gridSize : Int = 4
+    var gridList = List(gridSize) { mutableListOf<Cell?>()}
+
+    var cellsToDelete = mutableListOf<Cell>()
 
     init {
         // TODO: Initialize cells inside grid
-        for (i in 0..3) {
-            for (j in 0..3) {
-                gridList[i][j] = null
+        for (i in 0 until gridSize) {
+            for (j in 0 until gridSize) {
+                gridList[i].add(null)
             }
         }
 
-        gridList[0][0] = Cell(2, Vector2(0, 0))
-        gridList[1][0] = Cell(2, Vector2(1, 0))
+        gridList[2][1] = Cell(2, Vector2(1, 2))
+        gridList[2][0] = Cell(2, Vector2(1, 0))
+
+        testPrint()
     }
 
     // register user swiping in direction and update cell positions in grid
     fun swipe(direction : Direction) {
         when(direction) {
             Direction.DOWN -> {
-                for (i in 3 downTo 0) {
-                    for (j in 0..3) {
-                        findNewPosition(Vector2(j, i), Vector2(0, -1))
+                for (x in 0 until gridSize) {
+                    for (y in gridSize-1 downTo 0) {
+                        findNewPosition(Vector2(x, y), Vector2(0, 1))
                     }
                 }
             }
             Direction.UP -> {
-                for (i in 0..3) {
-                    for (j in 0..3) {
-                        findNewPosition(Vector2(j, i), Vector2(0, 1))
+                for (x in 0 until gridSize) {
+                    for (y in 0 until gridSize) {
+                        findNewPosition(Vector2(x, y), Vector2(0, -1))
                     }
                 }
             }
             Direction.RIGHT -> {
-                for (i in 3 downTo 0) {
-                    for (j in 0..3) {
-                        findNewPosition(Vector2(i, j), Vector2(1, 0))
+                for (y in 0 until gridSize) {
+                    for (x in gridSize-1 downTo 0) {
+                        findNewPosition(Vector2(x, y), Vector2(1, 0))
                     }
                 }
             }
             Direction.LEFT -> {
-                for (i in 0..3) {
-                    for (j in 0..3) {
-                        findNewPosition(Vector2(i, j), Vector2(-1, 0))
+                for (y in 0 until gridSize) {
+                    for (x in 0 until gridSize) {
+                        findNewPosition(Vector2(x, y), Vector2(-1, 0))
                     }
                 }
             }
         }
     }
 
-    fun findNewPosition(pos : Vector2, direction: Vector2) {
-        if (gridList[pos.x][pos.y] == null) return
+    private fun findNewPosition(pos : Vector2, direction: Vector2) {
+        // No cell to move here
+        if (gridList[pos.y][pos.x] == null) return
 
-        val nextPos : Vector2 = Vector2(pos.x + direction.x, pos.y + direction.y)
+        val nextX = pos.x + direction.x
+        val nextY = pos.y + direction.y
+        // Check if next is outside range, then pos at edge of grid
+        if (nextY < 0 || nextY > gridSize - 1 || nextX < 0 || nextX > gridSize - 1) return
+        val nextPos = Vector2(nextX, nextY)
 
-        // bottom of grid
-        if (pos.y == 3) return
-        // If next position if null
-        if (gridList[nextPos.x][nextPos.y] == null) {
-            gridList[nextPos.x][nextPos.y] = gridList[pos.x][pos.y]
-            gridList[pos.x][pos.y] = null
+        // If next position is null
+        if (gridList[nextPos.y][nextPos.x] == null) {
+            gridList[nextPos.y][nextPos.x] = gridList[pos.y][pos.x]
+            gridList[pos.y][pos.x] = null
             findNewPosition(Vector2(nextPos.x, nextPos.y), direction)
             // if next position same value, combine
-        } else if (gridList[pos.x][pos.y]?.value == gridList[nextPos.x][nextPos.y]?.value) {
-            val cellToDelete = gridList[nextPos.x][nextPos.y]
-            cellToDelete?.deleteFlag = true
-            gridList[nextPos.x][nextPos.y] = gridList[pos.x][pos.y]
-            gridList[nextPos.x][nextPos.y]?.nextGridPos = Vector2(nextPos.x, nextPos.y)
+        } else if (gridList[pos.y][pos.x]?.value == gridList[nextPos.y][nextPos.x]?.value) {
+            val cellToDelete = gridList[nextPos.y][nextPos.x]
+            if (cellToDelete != null) {
+                cellsToDelete.add(cellToDelete)
+            }
+            gridList[nextPos.y][nextPos.x] = gridList[pos.y][pos.x]
+            gridList[nextPos.y][nextPos.x]?.nextGridPos = Vector2(nextPos.y, nextPos.x)
+            gridList[nextPos.y][nextPos.x]?.isCombined = true
         // otherwise, next position different value, do nothing
         } else {
             return
         }
     }
 
+    fun testPrint() {
+        var printString = " \n"
+        for (i in 0 until gridSize) {
+            var row = ""
+            for (j in 0 until gridSize) {
+                row += gridList[i][j]?.value.toString() + " "
+            }
+            printString += row + "\n"
+        }
+        Log.d("test", printString)
+    }
+
     // Notifies grid that the animations were all finished and the cell's current positions should be updated
-    fun setPositionsUpdated() {
+    fun endRound() {
         // TODO: Set currPosition as nextPosition
+        for (i in 0 until gridSize) {
+            for (j in 0 until gridSize) {
+                gridList[i][j]?.endRound()
+            }
+        }
     }
 
 
