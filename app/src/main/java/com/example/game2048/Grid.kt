@@ -6,6 +6,8 @@ import android.util.Log
 class Grid() {
 
     private val gridSize : Int = 4
+
+    // gridList[x][y]: holds all numbers on the grid
     var gridList = List(gridSize) { mutableListOf<Cell?>()}
 
     var cellsToDelete = mutableListOf<Cell>()
@@ -19,7 +21,8 @@ class Grid() {
         }
 
         gridList[2][1] = Cell(2, Vector2(1, 2))
-        gridList[2][0] = Cell(2, Vector2(1, 0))
+        gridList[2][2] = Cell(2, Vector2(2, 2))
+        gridList[2][0] = Cell(4, Vector2(1, 0))
 
         testPrint()
     }
@@ -64,6 +67,7 @@ class Grid() {
 
         val nextX = pos.x + direction.x
         val nextY = pos.y + direction.y
+
         // Check if next is outside range, then pos at edge of grid
         if (nextY < 0 || nextY > gridSize - 1 || nextX < 0 || nextX > gridSize - 1) return
         val nextPos = Vector2(nextX, nextY)
@@ -73,15 +77,29 @@ class Grid() {
             gridList[nextPos.y][nextPos.x] = gridList[pos.y][pos.x]
             gridList[pos.y][pos.x] = null
             findNewPosition(Vector2(nextPos.x, nextPos.y), direction)
-            // if next position same value, combine
+
+        // if next position same value, combine
         } else if (gridList[pos.y][pos.x]?.value == gridList[nextPos.y][nextPos.x]?.value) {
+
+            // don't combine if next position already combined
+            if (gridList[nextPos.y][nextPos.x]?.isCombined == true) return
+
             val cellToDelete = gridList[nextPos.y][nextPos.x]
+            // move cell to new position and set cell in new position to delete
             if (cellToDelete != null) {
                 cellsToDelete.add(cellToDelete)
             }
-            gridList[nextPos.y][nextPos.x] = gridList[pos.y][pos.x]
-            gridList[nextPos.y][nextPos.x]?.nextGridPos = Vector2(nextPos.y, nextPos.x)
-            gridList[nextPos.y][nextPos.x]?.isCombined = true
+
+            val cellToMove = gridList[pos.y][pos.x]
+            gridList[nextPos.y][nextPos.x] = cellToMove
+            gridList[pos.y][pos.x] = null
+
+            cellToMove?.value = cellToMove?.value?.times(2)!!
+
+            // set next values for view to animate cell's new position
+            cellToMove.nextGridPos = Vector2(nextPos.y, nextPos.x)
+            cellToMove.isCombined = true
+
         // otherwise, next position different value, do nothing
         } else {
             return

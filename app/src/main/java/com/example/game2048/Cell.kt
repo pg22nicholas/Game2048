@@ -4,9 +4,9 @@ import android.view.View
 import androidx.annotation.Nullable
 import java.util.*
 
-class Cell(val value : Int, var currGridPos : Vector2, var nextGridPos : Vector2 = Vector2(currGridPos.x, currGridPos.y))
+class Cell(var value : Int, var currGridPos : Vector2, var nextGridPos : Vector2 = Vector2(currGridPos.x, currGridPos.y))
 {
-    var isCombined = true
+    var isCombined = false
     lateinit var view : View
 
     init {
