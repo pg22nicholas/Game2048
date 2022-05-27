@@ -1,8 +1,7 @@
-package com.example.game2048
+package com.example.game2048.models
 
 import android.view.View
-import androidx.annotation.Nullable
-import java.util.*
+import com.example.game2048.Vector2
 
 class Cell(var value : Int, var currGridPos : Vector2, var nextGridPos : Vector2 = Vector2(currGridPos.x, currGridPos.y))
 {

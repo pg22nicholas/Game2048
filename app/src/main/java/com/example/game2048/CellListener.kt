@@ -9,4 +9,6 @@ interface CellListener {
     fun updateCell(cellView : View, value : Int)
 
     fun deleteView(cellView : View)
+
+    fun addScore(scoreToAdd : Int)
 }

@@ -3,16 +3,17 @@ package com.example.game2048
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GestureDetectorCompat
-import java.lang.Math.abs
+import com.example.game2048.models.Grid
+import org.w3c.dom.Text
 import kotlin.random.Random
 
 
@@ -21,23 +22,17 @@ class MainActivity : AppCompatActivity(), CellListener
     var gestureDetectorCompat: GestureDetectorCompat? = null
     var isSwipedThisRound = false
     lateinit var grid : Grid
-    lateinit var layout : BoardConstraintLayout;
+    lateinit var layout : BoardConstraintLayout
+    var isGameOver = false
+    var score = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         layout = findViewById(R.id.board_container)
-        val vto = layout.viewTreeObserver
 
-        var isBoardDrawn = false;
-
-        // initialize grid once board is drawn
-        vto.addOnGlobalLayoutListener {
-            if (!isBoardDrawn)
-                grid = Grid(this)
-            isBoardDrawn = true
-        }
+        initializeGrid()
 
         gestureDetectorCompat = GestureDetectorCompat(this, object : SimpleOnGestureListener() {
             override fun onScroll(
@@ -46,6 +41,8 @@ class MainActivity : AppCompatActivity(), CellListener
                 distanceX: Float,
                 distanceY: Float
             ): Boolean {
+
+                if (isGameOver) return false
 
                 // swipe angle
                 val angle =
@@ -74,6 +71,32 @@ class MainActivity : AppCompatActivity(), CellListener
                 return false
             }
         })
+
+        findViewById<Button>(R.id.play_again_button).setOnClickListener {
+            resetGame()
+        }
+    }
+
+    private fun initializeGrid() {
+        val vto = layout.viewTreeObserver
+        var isBoardDrawn = false
+
+        // initialize grid once board is drawn
+        vto.addOnGlobalLayoutListener {
+            if (!isBoardDrawn)
+                grid = Grid(this)
+            isBoardDrawn = true
+        }
+    }
+
+
+    private fun resetGame() {
+        isGameOver = false
+        isSwipedThisRound = false
+        layout.removeAllViews()
+        score = 0
+        addScore(0)
+        initializeGrid()
     }
 
     private fun gestureSwipe(direction : Grid.Direction) : Boolean {
@@ -82,7 +105,6 @@ class MainActivity : AppCompatActivity(), CellListener
             return false
         isSwipedThisRound = true
 
-        // TODO: Only for testing to simulate animation delay
         Handler(Looper.getMainLooper()).postDelayed({
             isSwipedThisRound = false
 
@@ -96,12 +118,18 @@ class MainActivity : AppCompatActivity(), CellListener
 
         grid.swipe(direction)
         playerSwipe()
-        grid.checkIsGameOver()
+        if (grid.checkIsGameOver()) {
+            endGame()
+        }
         return true
     }
 
+    private fun endGame() {
+        isGameOver = true
+        findViewById<TextView>(R.id.game_ended_text).visibility = View.VISIBLE
+    }
+
     fun playerSwipe() {
-        // TODO: Animate changes
         grid.testPrint()
 
         var isCellMoved = false
@@ -136,11 +164,6 @@ class MainActivity : AppCompatActivity(), CellListener
         }
     }
 
-    fun animateCellChanges() {
-        // TODO: Animate all the changes to the cells after a swipe occurred
-        //  remove any overlapping Cells by checking their delete flag
-    }
-
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         gestureDetectorCompat?.onTouchEvent(event)
         return true
@@ -173,5 +196,10 @@ class MainActivity : AppCompatActivity(), CellListener
 
     override fun deleteView(cellView: View) {
         layout.removeView(cellView)
+    }
+
+    override fun addScore(scoreToAdd: Int) {
+        score += scoreToAdd
+        findViewById<TextView>(R.id.score_text).text = score.toString()
     }
 }

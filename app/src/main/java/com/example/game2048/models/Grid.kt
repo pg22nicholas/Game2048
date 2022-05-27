@@ -1,10 +1,10 @@
-package com.example.game2048
+package com.example.game2048.models
 
-import android.os.Debug
 import android.util.Log
+import com.example.game2048.CellListener
+import com.example.game2048.Vector2
 import kotlin.math.abs
 import kotlin.random.Random
-import kotlin.random.asJavaRandom
 
 class Grid(private val cellListener: CellListener) {
 
@@ -60,6 +60,7 @@ class Grid(private val cellListener: CellListener) {
         }
     }
 
+    // Recursively find the proper solution of the cell to move to, combining with other cells if same value
     private fun findNewPosition(pos : Vector2, direction: Vector2) {
         // No cell to move here
         if (gridList[pos.y][pos.x] == null) return
@@ -95,6 +96,7 @@ class Grid(private val cellListener: CellListener) {
             gridList[pos.y][pos.x] = null
 
             cellToMove?.value = cellToMove?.value?.times(2)!!
+            cellListener.addScore(cellToMove.value)
 
             // set next values for view to animate cell's new position
             cellToMove.nextGridPos = Vector2(nextPos.x, nextPos.y)
