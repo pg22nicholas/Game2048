@@ -123,9 +123,20 @@ class Grid(val cellListener: CellListener) {
         // TODO: Set currPosition as nextPosition
         for (i in 0 until gridSize) {
             for (j in 0 until gridSize) {
-                gridList[i][j]?.endRound()
+                var cell = gridList[i][j]
+                if (cell != null) {
+                    gridList[i][j]?.endRound()
+                    cellListener.updateCell(cell.view, cell.value)
+                }
             }
         }
+
+        for (cell in cellsToDelete) {
+            cellListener.deleteView(cell.view)
+        }
+        cellsToDelete.clear()
+
+        spawnRandom();
     }
 
     fun checkIsGameOver() : Boolean {

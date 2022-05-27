@@ -160,4 +160,8 @@ class MainActivity : AppCompatActivity(), CellListener
         val textValue = cellView.findViewById<TextView>(R.id.cell_value)
         textValue.text = value.toString()
     }
+
+    override fun deleteView(cellView: View) {
+        layout.removeView(cellView)
+    }
 }
