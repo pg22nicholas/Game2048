@@ -162,7 +162,8 @@ class Grid(val cellListener: CellListener) {
         }
 
         // Spawn the new random cell
-        val cell = Cell(2, Vector2(randX, randY))
+        val randVal : Int = if (Random.nextInt() > 0) 2 else 4
+        val cell = Cell(randVal, Vector2(randX, randY))
         val v = cellListener.createNewCell(Vector2(randX, randY))
         cell.attachView(v)
         gridList[randY][randX] = cell
