@@ -107,13 +107,6 @@ class MainActivity : AppCompatActivity(), CellListener
 
         Handler(Looper.getMainLooper()).postDelayed({
             isSwipedThisRound = false
-
-            // TODO: only for testing
-            val rand = kotlin.math.abs(Random.nextInt() % 4)
-            if (rand == 0) gestureSwipe(Grid.Direction.DOWN)
-            else if (rand == 1) gestureSwipe(Grid.Direction.UP)
-            else if (rand == 2) gestureSwipe(Grid.Direction.LEFT)
-            else gestureSwipe(Grid.Direction.RIGHT)
         }, 100)
 
         grid.swipe(direction)
@@ -201,5 +194,9 @@ class MainActivity : AppCompatActivity(), CellListener
     override fun addScore(scoreToAdd: Int) {
         score += scoreToAdd
         findViewById<TextView>(R.id.score_text).text = score.toString()
+    }
+
+    override fun wonGame() {
+        findViewById<TextView>(R.id.win_text).visibility = View.VISIBLE
     }
 }

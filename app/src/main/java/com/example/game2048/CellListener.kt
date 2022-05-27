@@ -11,4 +11,6 @@ interface CellListener {
     fun deleteView(cellView : View)
 
     fun addScore(scoreToAdd : Int)
+
+    fun wonGame()
 }

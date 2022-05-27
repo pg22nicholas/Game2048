@@ -96,6 +96,10 @@ class Grid(private val cellListener: CellListener) {
             gridList[pos.y][pos.x] = null
 
             cellToMove?.value = cellToMove?.value?.times(2)!!
+            // if combined value is 2038, player wins
+            if (cellToMove.value == 2048)
+                cellListener.wonGame()
+
             cellListener.addScore(cellToMove.value)
 
             // set next values for view to animate cell's new position
