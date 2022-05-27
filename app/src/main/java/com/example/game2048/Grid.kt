@@ -2,6 +2,7 @@ package com.example.game2048
 
 import android.os.Debug
 import android.util.Log
+import kotlin.math.abs
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
 
@@ -120,12 +121,11 @@ class Grid(val cellListener: CellListener) {
 
     // Notifies grid that the animations were all finished and the cell's current positions should be updated
     fun endRound() {
-        // TODO: Set currPosition as nextPosition
         for (i in 0 until gridSize) {
             for (j in 0 until gridSize) {
                 var cell = gridList[i][j]
                 if (cell != null) {
-                    gridList[i][j]?.endRound()
+                    cell.endRound()
                     cellListener.updateCell(cell.view, cell.value)
                 }
             }
@@ -136,7 +136,7 @@ class Grid(val cellListener: CellListener) {
         }
         cellsToDelete.clear()
 
-        spawnRandom();
+        spawnRandom()
     }
 
     fun checkIsGameOver() : Boolean {
@@ -145,25 +145,28 @@ class Grid(val cellListener: CellListener) {
     }
 
     fun spawnRandom() {
-        var randX = Random.nextInt() % gridSize
-        var randY = Random.nextInt() % gridSize
-        // TODO: Do actual random check
-
-        var isAdded = false;
-        for (i in 0..3) {
-            if (isAdded) break
-            for (j in 0..3) {
-                if (gridList[i][j] == null) {
-                    var cell = Cell(2, Vector2(j, i))
-                    var v = cellListener.createNewCell(Vector2(j, i))
-                    cell.attachView(v)
-                    gridList[i][j] = cell
-                    cellListener.updateCell(v, cell.value)
-                    isAdded = true
-                    break;
+        var randX = abs(Random.nextInt() % gridSize)
+        var randY = abs(Random.nextInt() % gridSize)
+        while (gridList[randY][randX] != null) {
+            randX++
+            // goto next row
+            if (randX == gridSize) {
+                randX = 0
+                randY++
+                // if hit last element, wrap back to beginning
+                if (randY == gridSize) {
+                    randX = 0
+                    randY = 0
                 }
             }
         }
+
+        // Spawn the new random cell
+        val cell = Cell(2, Vector2(randX, randY))
+        val v = cellListener.createNewCell(Vector2(randX, randY))
+        cell.attachView(v)
+        gridList[randY][randX] = cell
+        cellListener.updateCell(v, cell.value)
     }
 
     enum class Direction {

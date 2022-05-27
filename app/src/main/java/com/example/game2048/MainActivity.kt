@@ -109,24 +109,18 @@ class MainActivity : AppCompatActivity(), CellListener
 
                     if (curr?.x == next?.x && curr?.y == next?.y) continue
 
-                    var v = gridList[i][j]?.view
-                    val layoutParams = v?.layoutParams as ConstraintLayout.LayoutParams
                     var posNext = next?.let { layout.GetPointOnScreen(it) }
-                    if (next != null) {
-                        if (posNext != null) {
-                            v.translationX = posNext.x.toFloat()
-                        }
+                    var v = gridList[i][j]?.view
+                    if (posNext != null && v != null) {
+                        v.animate()
+                            .translationX(posNext.x.toFloat())
+                            .translationY(posNext.y.toFloat())
+                            .setDuration(100)
+                            .start()
                     }
-                    if (next != null) {
-                        if (posNext != null) {
-                            v.translationY = posNext.y.toFloat()
-                        }
-                    }
-                    v.layoutParams = layoutParams
                 }
             }
         }
-
         grid.endRound()
     }
 
