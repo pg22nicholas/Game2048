@@ -1,13 +1,16 @@
 package com.example.game2048
 
 import android.content.Context
+import android.util.AttributeSet
 import androidx.constraintlayout.widget.ConstraintLayout
 import java.util.*
 
 class BoardConstraintLayout : ConstraintLayout {
 
-    private var cellSize = measuredWidth / 4
     constructor(context : Context) : super(context)
+    constructor(context : Context, attrs: AttributeSet) : super (context, attrs)
+
+    private var cellSize = measuredWidth / 4
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -16,10 +19,10 @@ class BoardConstraintLayout : ConstraintLayout {
         setMeasuredDimension(width, width);
     }
 
-    fun GetPointOnScreen(gridPosition : Vector2) : Vector2Float {
-        val x : Float = gridPosition.x * (cellSize.toFloat() / 2) + left
-        val y : Float = gridPosition.y * (cellSize.toFloat() / 2) - top;
+    fun GetPointOnScreen(gridPosition : Vector2) : Vector2 {
+        val x : Int = (gridPosition.x * measuredWidth/4) + left
+        val y : Int = (gridPosition.y * measuredWidth/4) + top
 
-        return Vector2Float(x, y)
+        return Vector2(x, y)
     }
 }

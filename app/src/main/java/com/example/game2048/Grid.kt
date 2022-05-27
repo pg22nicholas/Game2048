@@ -3,7 +3,7 @@ package com.example.game2048
 import android.os.Debug
 import android.util.Log
 
-class Grid() {
+class Grid(val cellListener: CellListener) {
 
     private val gridSize : Int = 4
 
@@ -16,14 +16,14 @@ class Grid() {
         // TODO: Initialize cells inside grid
         for (i in 0 until gridSize) {
             for (j in 0 until gridSize) {
+                cellListener.createNewCell(Vector2(i, j))
                 gridList[i].add(null)
             }
         }
 
         gridList[2][1] = Cell(2, Vector2(1, 2))
         gridList[2][2] = Cell(2, Vector2(2, 2))
-        gridList[2][0] = Cell(4, Vector2(1, 0))
-
+        gridList[2][0] = Cell(4, Vector2(2, 0))
         testPrint()
     }
 

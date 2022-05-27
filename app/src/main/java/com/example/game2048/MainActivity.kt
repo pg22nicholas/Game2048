@@ -5,29 +5,37 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.GestureDetector.SimpleOnGestureListener
+import android.view.LayoutInflater
 import android.view.MotionEvent
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GestureDetectorCompat
-import java.lang.Math.atan2
 
 
-class MainActivity : AppCompatActivity()
+class MainActivity : AppCompatActivity(), CellListener
 {
     var gestureDetectorCompat: GestureDetectorCompat? = null
     var isSwipedThisRound = false
-    val grid : Grid = Grid()
+    lateinit var grid : Grid
+    lateinit var layout : BoardConstraintLayout;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val layout = findViewById<BoardConstraintLayout>(R.id.board_container)
-        for (i in 0..3) {
-            for (j in 0..3) {
-                layout.GetPointOnScreen(Vector2(i, j))
-            }
-        }
+        layout = findViewById(R.id.board_container)
+        val vto = layout.viewTreeObserver
 
+        var isBoardDrawn = false;
+
+        // initialize grid once board is drawn
+        vto.addOnGlobalLayoutListener {
+            if (!isBoardDrawn)
+                grid = Grid(this)
+            isBoardDrawn = true
+        }
 
         gestureDetectorCompat = GestureDetectorCompat(this, object : SimpleOnGestureListener() {
             override fun onScroll(
@@ -100,5 +108,27 @@ class MainActivity : AppCompatActivity()
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         gestureDetectorCompat?.onTouchEvent(event)
         return true
+    }
+
+    override fun createNewCell(pos: Vector2) : View {
+        var LI : LayoutInflater = LayoutInflater.from(applicationContext)
+        var v: View = LI.inflate(R.layout.cell, null)
+        var pixelPos = layout.GetPointOnScreen(pos)
+
+        layout.addView(v)
+        val layoutParams = v.layoutParams as ConstraintLayout.LayoutParams
+        v.translationX = pixelPos.x.toFloat()
+        v.translationY = pixelPos.y.toFloat()
+
+        //layoutParams.setMargins(pixelPos.x, pixelPos.y, 0, 0)
+        layoutParams.width = layout.width / 4
+        layoutParams.height = layout.width / 4
+        v.layoutParams = layoutParams
+        return v
+    }
+
+    override fun updateCell(cellView: View, value: Int) {
+        val textValue = cellView.findViewById<TextView>(R.id.cell_value)
+        textValue.text = value.toString()
     }
 }
