@@ -6,7 +6,7 @@ import kotlin.math.abs
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
 
-class Grid(val cellListener: CellListener) {
+class Grid(private val cellListener: CellListener) {
 
     val gridSize : Int = 4
 
@@ -139,12 +139,37 @@ class Grid(val cellListener: CellListener) {
         spawnRandom()
     }
 
+    // Checks if it's a game over
     fun checkIsGameOver() : Boolean {
-        // TODO:
+        for (i in 0 until gridSize) {
+            for (j in 0 until gridSize) {
+                // game not over if there's a valid move still possible
+                if (isValidAdjacentMove(Vector2(i, j)))
+                    return false
+            }
+        }
+        // no valid moves, game is over
+        return true
+    }
+
+    // returns true if there is an adjacent tile of the same value
+    private fun isValidAdjacentMove(pos : Vector2) :Boolean {
+        // if any cell is empty, then there must be a valid move
+        if (gridList[pos.y][pos.x] == null) return true
+
+        // if an adjacent cell has the same value, then valid move
+        if (pos.x - 1 > 0 && gridList[pos.y][pos.x - 1] != null && gridList[pos.y][pos.x - 1]?.value == gridList[pos.y][pos.x]?.value ||
+            pos.x + 1 < gridSize && gridList[pos.y][pos.x + 1] != null && gridList[pos.y][pos.x + 1]?.value == gridList[pos.y][pos.x]?.value ||
+            pos.y - 1 > 0 && gridList[pos.y - 1][pos.x] != null && gridList[pos.y - 1][pos.x]?.value == gridList[pos.y][pos.x]?.value ||
+            pos.y + 1 < gridSize && gridList[pos.y + 1][pos.x] != null && gridList[pos.y + 1][pos.x]?.value == gridList[pos.y][pos.x]?.value) {
+            return true
+        }
+
         return false
     }
 
-    fun spawnRandom() {
+    // Create a new cell and spawn at random empty location on the board
+    private fun spawnRandom() {
         var randX = abs(Random.nextInt() % gridSize)
         var randY = abs(Random.nextInt() % gridSize)
         while (gridList[randY][randX] != null) {

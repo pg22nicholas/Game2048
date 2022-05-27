@@ -12,6 +12,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GestureDetectorCompat
+import java.lang.Math.abs
+import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity(), CellListener
@@ -44,60 +46,65 @@ class MainActivity : AppCompatActivity(), CellListener
                 distanceX: Float,
                 distanceY: Float
             ): Boolean {
-                // if swipe already registered, wait for animation to complete before listening again
-                if (isSwipedThisRound)
-                    return false
-                isSwipedThisRound = true
 
-                // TODO: Only for testing to simulate animation delay
-                Handler(Looper.getMainLooper()).postDelayed({
-                    isSwipedThisRound = false
-                }, 1000)
-
+                // swipe angle
                 val angle =
                     Math.toDegrees(
                         kotlin.math.atan2(
                             (e1.y - e2.y).toDouble(),
-                            (e2.x - e1.x).toDouble()
-                        )
+                            (e2.x - e1.x).toDouble())
                     ).toFloat()
+
                 // Left swipe
                 if (angle > -45 && angle <= 45) {
-                    Log.d("test", "Right to Left swipe performed")
-                    grid.swipe(Grid.Direction.RIGHT)
-                    playerSwipe()
-                    return true
+                    return gestureSwipe(Grid.Direction.RIGHT)
                 }
                 // Right swipe
                 if (angle >= 135 && angle < 180 || angle < -135 && angle > -180) {
-                    Log.d("test", "Left to Right swipe performed")
-                    grid.swipe(Grid.Direction.LEFT)
-                    playerSwipe()
-                    return true
+                    return gestureSwipe(Grid.Direction.LEFT)
                 }
                 // Up swipe
                 if (angle < -45 && angle >= -135) {
-                    Log.d("test", "Up to Down swipe performed")
-                    grid.swipe(Grid.Direction.DOWN)
-                    playerSwipe()
-                    return true
+                    return gestureSwipe(Grid.Direction.DOWN)
                 }
                 // Down swipe
                 if (angle > 45 && angle <= 135) {
-                    Log.d("test", "Down to Up swipe performed")
-                    grid.swipe(Grid.Direction.UP)
-                    playerSwipe()
-                    return true
+                    return gestureSwipe(Grid.Direction.UP)
                 }
                 return false
             }
         })
     }
 
+    private fun gestureSwipe(direction : Grid.Direction) : Boolean {
+        // if swipe already registered, wait for animation to complete before listening again
+        if (isSwipedThisRound)
+            return false
+        isSwipedThisRound = true
+
+        // TODO: Only for testing to simulate animation delay
+        Handler(Looper.getMainLooper()).postDelayed({
+            isSwipedThisRound = false
+
+            // TODO: only for testing
+            val rand = kotlin.math.abs(Random.nextInt() % 4)
+            if (rand == 0) gestureSwipe(Grid.Direction.DOWN)
+            else if (rand == 1) gestureSwipe(Grid.Direction.UP)
+            else if (rand == 2) gestureSwipe(Grid.Direction.LEFT)
+            else gestureSwipe(Grid.Direction.RIGHT)
+        }, 100)
+
+        grid.swipe(direction)
+        playerSwipe()
+        grid.checkIsGameOver()
+        return true
+    }
+
     fun playerSwipe() {
         // TODO: Animate changes
         grid.testPrint()
 
+        var isCellMoved = false
         var gridList = grid.gridList;
         for (i in 0 until grid.gridSize) {
             for (j in 0 until grid.gridSize) {
@@ -108,6 +115,7 @@ class MainActivity : AppCompatActivity(), CellListener
                     // if they are different position, animate to new position
 
                     if (curr?.x == next?.x && curr?.y == next?.y) continue
+                    isCellMoved = true
 
                     var posNext = next?.let { layout.GetPointOnScreen(it) }
                     var v = gridList[i][j]?.view
@@ -121,7 +129,11 @@ class MainActivity : AppCompatActivity(), CellListener
                 }
             }
         }
-        grid.endRound()
+
+        // Only register the round ended if a valid move was performed
+        if (isCellMoved) {
+            grid.endRound()
+        }
     }
 
     fun animateCellChanges() {
