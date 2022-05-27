@@ -139,6 +139,7 @@ class MainActivity : AppCompatActivity(), CellListener
         var v: View = LI.inflate(R.layout.cell, null)
         var pixelPos = layout.GetPointOnScreen(pos)
 
+        v.alpha = 0F
         layout.addView(v)
         val layoutParams = v.layoutParams as ConstraintLayout.LayoutParams
         v.translationX = pixelPos.x.toFloat()
@@ -146,7 +147,10 @@ class MainActivity : AppCompatActivity(), CellListener
 
         layoutParams.width = layout.width / 4
         layoutParams.height = layout.width / 4
+
         v.layoutParams = layoutParams
+
+        v.animate().alpha(1F).setDuration(1000).start()
         return v
     }
 
