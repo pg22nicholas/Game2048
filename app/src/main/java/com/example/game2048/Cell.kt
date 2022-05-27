@@ -14,7 +14,7 @@ class Cell(var value : Int, var currGridPos : Vector2, var nextGridPos : Vector2
     }
 
     fun attachView(view: View) {
-        // TODO: Attach view to this cell, created inside a view class
+        this.view = view
     }
 
     fun endRound() {

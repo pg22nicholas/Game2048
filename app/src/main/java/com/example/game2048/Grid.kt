@@ -2,10 +2,12 @@ package com.example.game2048
 
 import android.os.Debug
 import android.util.Log
+import kotlin.random.Random
+import kotlin.random.asJavaRandom
 
 class Grid(val cellListener: CellListener) {
 
-    private val gridSize : Int = 4
+    val gridSize : Int = 4
 
     // gridList[x][y]: holds all numbers on the grid
     var gridList = List(gridSize) { mutableListOf<Cell?>()}
@@ -13,17 +15,13 @@ class Grid(val cellListener: CellListener) {
     var cellsToDelete = mutableListOf<Cell>()
 
     init {
-        // TODO: Initialize cells inside grid
         for (i in 0 until gridSize) {
             for (j in 0 until gridSize) {
-                cellListener.createNewCell(Vector2(i, j))
                 gridList[i].add(null)
             }
         }
 
-        gridList[2][1] = Cell(2, Vector2(1, 2))
-        gridList[2][2] = Cell(2, Vector2(2, 2))
-        gridList[2][0] = Cell(4, Vector2(2, 0))
+        spawnRandom()
         testPrint()
     }
 
@@ -75,6 +73,7 @@ class Grid(val cellListener: CellListener) {
         // If next position is null
         if (gridList[nextPos.y][nextPos.x] == null) {
             gridList[nextPos.y][nextPos.x] = gridList[pos.y][pos.x]
+            gridList[nextPos.y][nextPos.x]?.nextGridPos = Vector2(nextPos.x, nextPos.y)
             gridList[pos.y][pos.x] = null
             findNewPosition(Vector2(nextPos.x, nextPos.y), direction)
 
@@ -97,8 +96,9 @@ class Grid(val cellListener: CellListener) {
             cellToMove?.value = cellToMove?.value?.times(2)!!
 
             // set next values for view to animate cell's new position
-            cellToMove.nextGridPos = Vector2(nextPos.y, nextPos.x)
+            cellToMove.nextGridPos = Vector2(nextPos.x, nextPos.y)
             cellToMove.isCombined = true
+            return;
 
         // otherwise, next position different value, do nothing
         } else {
@@ -128,6 +128,32 @@ class Grid(val cellListener: CellListener) {
         }
     }
 
+    fun checkIsGameOver() : Boolean {
+        // TODO:
+        return false
+    }
+
+    fun spawnRandom() {
+        var randX = Random.nextInt() % gridSize
+        var randY = Random.nextInt() % gridSize
+        // TODO: Do actual random check
+
+        var isAdded = false;
+        for (i in 0..3) {
+            if (isAdded) break
+            for (j in 0..3) {
+                if (gridList[i][j] == null) {
+                    var cell = Cell(2, Vector2(j, i))
+                    var v = cellListener.createNewCell(Vector2(j, i))
+                    cell.attachView(v)
+                    gridList[i][j] = cell
+                    cellListener.updateCell(v, cell.value)
+                    isAdded = true
+                    break;
+                }
+            }
+        }
+    }
 
     enum class Direction {
         UP, DOWN, LEFT, RIGHT

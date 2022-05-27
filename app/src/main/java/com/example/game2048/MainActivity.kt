@@ -97,6 +97,36 @@ class MainActivity : AppCompatActivity(), CellListener
     fun playerSwipe() {
         // TODO: Animate changes
         grid.testPrint()
+
+        var gridList = grid.gridList;
+        for (i in 0 until grid.gridSize) {
+            for (j in 0 until grid.gridSize) {
+                if (gridList[i][j] != null)
+                {
+                    val curr = gridList[i][j]?.currGridPos
+                    val next = gridList[i][j]?.nextGridPos
+                    // if they are different position, animate to new position
+
+                    if (curr?.x == next?.x && curr?.y == next?.y) continue
+
+                    var v = gridList[i][j]?.view
+                    val layoutParams = v?.layoutParams as ConstraintLayout.LayoutParams
+                    var posNext = next?.let { layout.GetPointOnScreen(it) }
+                    if (next != null) {
+                        if (posNext != null) {
+                            v.translationX = posNext.x.toFloat()
+                        }
+                    }
+                    if (next != null) {
+                        if (posNext != null) {
+                            v.translationY = posNext.y.toFloat()
+                        }
+                    }
+                    v.layoutParams = layoutParams
+                }
+            }
+        }
+
         grid.endRound()
     }
 
@@ -120,7 +150,6 @@ class MainActivity : AppCompatActivity(), CellListener
         v.translationX = pixelPos.x.toFloat()
         v.translationY = pixelPos.y.toFloat()
 
-        //layoutParams.setMargins(pixelPos.x, pixelPos.y, 0, 0)
         layoutParams.width = layout.width / 4
         layoutParams.height = layout.width / 4
         v.layoutParams = layoutParams
