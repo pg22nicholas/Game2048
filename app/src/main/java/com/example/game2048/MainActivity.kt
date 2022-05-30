@@ -96,6 +96,7 @@ class MainActivity : AppCompatActivity(), CellListener
         score = 0
         addScore(0)
         initializeGrid()
+        findViewById<TextView>(R.id.game_ended_text).visibility = View.GONE
     }
 
     private fun gestureSwipe(direction : Grid.Direction) : Boolean {
@@ -197,5 +198,9 @@ class MainActivity : AppCompatActivity(), CellListener
 
     override fun wonGame() {
         findViewById<TextView>(R.id.win_text).visibility = View.VISIBLE
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            findViewById<TextView>(R.id.win_text).visibility = View.GONE
+        }, 5000)
     }
 }
