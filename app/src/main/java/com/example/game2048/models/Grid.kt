@@ -2,7 +2,6 @@ package com.example.game2048.models
 
 import android.util.Log
 import com.example.game2048.CellListener
-import com.example.game2048.Vector2
 import kotlin.math.abs
 import kotlin.random.Random
 

@@ -13,8 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GestureDetectorCompat
 import com.example.game2048.models.Grid
-import org.w3c.dom.Text
-import kotlin.random.Random
+import com.example.game2048.models.Vector2
 
 
 class MainActivity : AppCompatActivity(), CellListener

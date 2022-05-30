@@ -3,7 +3,7 @@ package com.example.game2048
 import android.content.Context
 import android.util.AttributeSet
 import androidx.constraintlayout.widget.ConstraintLayout
-import java.util.*
+import com.example.game2048.models.Vector2
 
 class BoardConstraintLayout : ConstraintLayout {
 

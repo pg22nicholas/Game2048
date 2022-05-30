@@ -1,6 +1,7 @@
 package com.example.game2048
 
 import android.view.View
+import com.example.game2048.models.Vector2
 
 interface CellListener {
 

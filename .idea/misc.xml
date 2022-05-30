@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Programming projects/VFS-not-onedrive/android_class/Game2048/app/src/main/res/drawable/cell.xml" value="0.291" />
+        <entry key="..\:/Programming projects/VFS-not-onedrive/android_class/Game2048/app/src/main/res/drawable/grid.xml" value="0.291" />
+        <entry key="..\:/Programming projects/VFS-not-onedrive/android_class/Game2048/app/src/main/res/drawable/grid_border.xml" value="0.291" />
         <entry key="..\:/Programming projects/VFS-not-onedrive/android_class/Game2048/app/src/main/res/layout/activity_main.xml" value="0.30833333333333335" />
         <entry key="..\:/Programming projects/VFS-not-onedrive/android_class/Game2048/app/src/main/res/layout/cell.xml" value="0.2791666666666667" />
         <entry key="..\:/Users/Public/Repos/Android/Game2048/app/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
